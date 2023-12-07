@@ -31,32 +31,43 @@ func main() {
 		panic(err)
 	}
 
-	res, err := http.Get(os.Getenv("WEATHER_API_KEY"))
-	if err != nil {
-		panic(err)
-	}
-	defer res.Body.Close()
+	// Handle empty arguments[]
+	if len(os.Args) > 1 {
+		city := os.Args[1]
+		res, err := http.Get("http://api.weatherapi.com/v1/current.json?key=" + os.Getenv("WEATHER_API_KEY") + "&q=" + city +"&aqi=no")
+		if err != nil {
+			panic(err)
+		}
 
-	if res.StatusCode != 200 {
-		panic("API is not available")
+		defer res.Body.Close()
+
+
+		if res.StatusCode != 200 {
+			panic("API is not available")
+		}
+
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			panic(err)
+		}
+
+		var weather Weather
+		err = json.Unmarshal(body, &weather)
+		if err != nil {
+			panic(err)
+		}
+
+		location, current, localtime := weather.Location.Name, weather.Current.Temp_c, weather.Location.Localtime
+
+		fmt.Printf( 
+			"%s: %.2f°C, %s",
+			location, 
+			current, 
+			localtime)
+
+		} else {
+			fmt.Println("Please provide a city")
+		}
 	}
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		panic(err)
-	}
 	
-	var weather Weather
-	err = json.Unmarshal(body, &weather)
-	if err != nil {
-		panic(err)
-	}
-
-	location, current, localtime := weather.Location.Name, weather.Current.Temp_c, weather.Location.Localtime
-
-	fmt.Printf( 
-		"%s: %.2f°C, %s",
-		location, 
-		current, 
-		localtime)
-}
