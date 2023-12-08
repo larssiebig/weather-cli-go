@@ -30,7 +30,13 @@ Follow Instructions of [Weatherapi](https://www.weatherapi.com/docs/)
 
 ## Usage
 
-Run main.go in your terminal with your city
+Run main.go in your terminal
+
+```bash
+go run main.go
+```
+
+or run it with the city param
 
 ```bash
 go run main.go -city London
