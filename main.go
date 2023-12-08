@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/joho/godotenv"
@@ -32,6 +34,10 @@ type ErrorResponse struct {
 	} `json:"error"`
 }
 
+func trimAllSpace(s string) string {
+	return strings.Join(strings.Fields(s), "")
+}
+
 var ctx, cancel = context.WithCancel(context.Background())
 var wg = sync.WaitGroup{}
 
@@ -40,7 +46,15 @@ func main() {
 	flag.Parse()
 
 	if *cityFlag == "" {
-		exitWithError("Please provide a city using the -city flag")
+		fmt.Print("What city are you looking for? \n")
+		reader := bufio.NewReader(os.Stdin)
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			exitWithError(err.Error())
+			return
+		}
+		*cityFlag = trimAllSpace(input)
+
 	}
 	err := godotenv.Load()
 	if err != nil {
@@ -86,7 +100,7 @@ func main() {
 	location, current, localtime := weather.Location.Name, weather.Current.TempC, weather.Location.Localtime
 
 	fmt.Printf(
-		"%s: %.2f°C, %s\n",
+		"Temperature in %s: %.2f°C, %s\n",
 		location,
 		current,
 		localtime)
