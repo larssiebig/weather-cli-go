@@ -61,7 +61,6 @@ func main() {
 			wg.Done()
 			return
 		}
-		fmt.Println("resBody closed")
 		wg.Done()
 	}()
 
