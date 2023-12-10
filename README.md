@@ -4,9 +4,9 @@ This is a simple weather CLI programm to start my journey with Go
 
 ## Installation
 
-### 1. Install Go
+### 1. Download Version
 
-Follow Instructions of [Go](https://go.dev/doc/install)
+Download [Release](https://github.com/larssiebig/weather-cli-go/releases/tag/v1.0.0)
 
 ### 2. Create your Weatherapi-Key:
 
@@ -14,19 +14,13 @@ Follow Instructions of [Weatherapi](https://www.weatherapi.com/docs/)
 
 ### 3. Clone this Repository:
 
-1. Clone with Terminal:
+1. Add a ".env"-file to your folder
 
-```bash
- git clone https://github.com/larssiebig/weather-cli-go/
-```
-
-2. Add a ".env"-file to your folder
-
-3. Open ".env"-file and set your Weatherapi-Key Variable like this:
+2. Open ".env"-file and set your Weatherapi-Key Variable like this:
 
 ![Screenshot 2023-12-06 032746](https://github.com/larssiebig/weather-cli-go/assets/100628580/617f6af0-9681-4eab-a20d-e4d2e422c77f)
 
-**Make sure you only paste in the key (30 digits)**
+**Make sure you only paste the key (30 digits)**
 
 ## Usage
 
@@ -41,8 +35,6 @@ or run it with the city param
 ```bash
 go run main.go -city London
 ```
-
-**Make sure to run it in your created folder!**
 
 ## Expected Output
 
