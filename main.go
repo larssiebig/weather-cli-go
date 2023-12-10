@@ -10,6 +10,8 @@ import (
 	"os"
 	"strings"
 	"sync"
+
+	"github.com/joho/godotenv"
 )
 
 type Weather struct {
@@ -25,10 +27,6 @@ type Weather struct {
 	} `json:"current"`
 }
 
-type Json struct {
-	Value string `json:"value"`
-}
-
 type ErrorResponse struct {
 	Error struct {
 		Code    int    `json:"code"`
@@ -40,40 +38,12 @@ func trimAllSpace(s string) string {
 	return strings.Join(strings.Fields(s), "")
 }
 
-func createJsonFile(key string) {
-	file, err := os.Create("config.json")
-	if err != nil {
-		exitWithError(err.Error())
-	}
-
-	defer file.Close()
-
-	encoder := json.NewEncoder(file)
-	err = encoder.Encode(Json{key})
-	if err != nil {
-		exitWithError(err.Error())
-	}
-}
-
 var ctx, cancel = context.WithCancel(context.Background())
 var wg = sync.WaitGroup{}
 
 func main() {
 	cityFlag := flag.String("city", "", "City to get weather for, e.g. London")
 	flag.Parse()
-
-	file, err := os.Open("config.json")
-	if file == nil {
-		fmt.Print("Please enter your weatherapi.com key: \n")
-		reader := bufio.NewReader(os.Stdin)
-		input, err := reader.ReadString('\n')
-		if err != nil {
-			exitWithError(err.Error())
-			return
-		}
-		fmt.Println(input)
-		createJsonFile(input)
-	}
 
 	if *cityFlag == "" {
 		fmt.Print("What city are you looking for? \n")
@@ -84,21 +54,14 @@ func main() {
 			return
 		}
 		*cityFlag = trimAllSpace(input)
-	}
 
+	}
+	err := godotenv.Load()
 	if err != nil {
 		exitWithError(err.Error())
 	}
 
-	defer file.Close()
-
-	var key Json
-	err = json.NewDecoder(file).Decode(&key)
-	if err != nil {
-		exitWithError(err.Error())
-	}
-
-	query := fmt.Sprintf("http://api.weatherapi.com/v1/current.json?key=%s&q=%s&aqi=no", key.Value, *cityFlag)
+	query := fmt.Sprintf("http://api.weatherapi.com/v1/current.json?key=%s&q=%s&aqi=no", os.Getenv("WEATHER_API_KEY"), *cityFlag)
 	res, err := http.Get(query)
 	if err != nil {
 		exitWithError(err.Error())
